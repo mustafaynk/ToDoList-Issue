@@ -11,14 +11,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
-class NoteViewModel(@NonNull application: Application) : AndroidViewModel(application) {
+class NoteViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: NoteRepository = NoteRepository(application)
-    val allNotes: LiveData<List<Note>>
-
-    init {
-        allNotes = repository.allNotes
-    }
+    val allNotes: LiveData<List<Note>> = repository.allNotes
 
     fun insert(note: Note) {
         viewModelScope.launch {

@@ -6,18 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProviders
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import com.example.todolistziro.R
+import com.example.todolistziro.architecture.App
+import com.example.todolistziro.architecture.viewBinding
+import com.example.todolistziro.architecture.viewModel
 import com.example.todolistziro.data.Note
+import com.example.todolistziro.databinding.FragmentAddNotesBinding
 import com.example.todolistziro.utils.Constants
 import com.example.todolistziro.viewmodel.NoteViewModel
-import kotlinx.android.synthetic.main.fragment_add_notes.*
 
 class AddNotes : BaseFragment() {
 
     var priority: Int = 0
-    private var noteViewModel: NoteViewModel? = null
+    private val noteViewModel by viewModel(::initViewModel)
+    private val binding by viewBinding(FragmentAddNotesBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,20 +31,19 @@ class AddNotes : BaseFragment() {
         return inflater.inflate(R.layout.fragment_add_notes, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel::class.java)
-
-        work.setOnClickListener { priority = 0 }
-        personal.setOnClickListener { priority = 1 }
-        health.setOnClickListener { priority = 2 }
-        addTask.setOnClickListener { saveNote() }
+        binding.work.setOnClickListener { priority = 0 }
+        binding.personal.setOnClickListener { priority = 1 }
+        binding.health.setOnClickListener { priority = 2 }
+        binding.addTask.setOnClickListener { saveNote() }
     }
 
     private fun saveNote() {
-        val title = editTextTitle?.text.toString().trim { it <= ' ' }
-        val description = editTextDescription?.text.toString().trim { it <= ' ' }
+        val title = binding.editTextTitle.text.toString().trim { it <= ' ' }
+        val description = binding.editTextDescription.text.toString().trim { it <= ' ' }
 
         if (title.isEmpty() || description.isEmpty()) {
             Toast.makeText(
@@ -55,31 +58,12 @@ class AddNotes : BaseFragment() {
         data.putExtra(Constants.EXTRA_DESCRIPTION, description)
         data.putExtra(Constants.EXTRA_PRIORITY, priority)
 
-        /*val title = data!!.getStringExtra(EXTRA_TITLE)
-        val description = data!!.getStringExtra(EXTRA_DESCRIPTION)
-        val priority = data!!.getIntExtra(EXTRA_PRIORITY, 1)*/
-
         val note = Note(title, description, priority)
-        noteViewModel!!.insert(note)
+        noteViewModel.insert(note)
 
         findNavController().navigate(R.id.destination_home)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        /*if (requestCode == activity.ADD_NOTE_REQUEST && resultCode == RESULT_OK) {
-            val title = data!!.getStringExtra(EXTRA_TITLE)
-            val description = data!!.getStringExtra(EXTRA_DESCRIPTION)
-            val priority = data!!.getIntExtra(EXTRA_PRIORITY, 1)
-
-            val note = Note(title, description, priority)
-            noteViewModel!!.insert(note)
-
-            Toast.makeText(this.activity, "Note saved", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this.activity, "Note not saved", Toast.LENGTH_SHORT).show()
-        }*/
-    }
+    private fun initViewModel() = NoteViewModel(App())
 
 }

@@ -13,32 +13,36 @@ import com.example.todolistziro.data.Note
 import com.example.todolistziro.viewmodel.NoteViewModel
 import java.util.ArrayList
 
-class NoteAdapter(private val context: Context, private var noteViewModel:NoteViewModel?)
-    : RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
+class NoteAdapter(private val context: Context, private var noteViewModel: NoteViewModel) :
+    RecyclerView.Adapter<NoteAdapter.NoteHolder>() {
     private var notes: List<Note> = ArrayList()
 
-    @NonNull
-    override fun onCreateViewHolder(@NonNull viewGroup: ViewGroup, position: Int): NoteHolder {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): NoteHolder {
         val itemView = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.note_item, viewGroup, false)
         return NoteHolder(itemView)
     }
 
-    override fun onBindViewHolder(@NonNull noteHolder: NoteHolder, position: Int) {
+    override fun onBindViewHolder(noteHolder: NoteHolder, position: Int) {
         val currentNote = notes[position]
         noteHolder.textViewTitle.text = currentNote.title
         noteHolder.textViewTitle.setTextColor(context.resources.getColor(getColor(currentNote.priority)))
         noteHolder.textViewDescription.text = currentNote.description
         noteHolder.type.setBackgroundResource(getColor(currentNote.priority))
         noteHolder.priority.text = getType(currentNote.priority)
-        noteHolder.priority.setCompoundDrawablesWithIntrinsicBounds(getDrawable(currentNote.priority),0,0,0)
+        noteHolder.priority.setCompoundDrawablesWithIntrinsicBounds(
+            getDrawable(currentNote.priority),
+            0,
+            0,
+            0
+        )
 
         noteHolder.close.setOnClickListener {
-            noteViewModel!!.delete(getNoteAt(position))
+            noteViewModel.delete(getNoteAt(position))
         }
     }
 
-    private fun getColor(priority: Int):Int {
+    private fun getColor(priority: Int): Int {
         return when (priority) {
             0 -> R.color.orange
             1 -> R.color.purple
@@ -47,7 +51,7 @@ class NoteAdapter(private val context: Context, private var noteViewModel:NoteVi
         }
     }
 
-    private fun getDrawable(priority: Int):Int {
+    private fun getDrawable(priority: Int): Int {
         return when (priority) {
             0 -> R.drawable.ic_circle_orange
             1 -> R.drawable.ic_circle_purple
@@ -55,7 +59,8 @@ class NoteAdapter(private val context: Context, private var noteViewModel:NoteVi
             else -> R.drawable.ic_circle_orange
         }
     }
-    private fun getType(priority: Int):String {
+
+    private fun getType(priority: Int): String {
         return when (priority) {
             0 -> "Work"
             1 -> "Personal"
@@ -72,7 +77,7 @@ class NoteAdapter(private val context: Context, private var noteViewModel:NoteVi
     override fun getItemCount(): Int {
         return notes.size
     }
-    
+
     fun getNoteAt(position: Int): Int {
         return notes[position].id
     }

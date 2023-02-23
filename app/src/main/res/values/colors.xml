@@ -10,4 +10,10 @@
     <color name="blue">#1377EB</color>
 
 
+    <color name="grey_40">#999999</color>
+    <color name="grey_60">#666666</color>
+    <color name="blue_grey_300">#90A4AE</color>
+    <color name="red_300">#E57373</color>
+    <color name="red_400">#EF5350</color>
+    <color name="red_500">#F44336</color>
 </resources>
