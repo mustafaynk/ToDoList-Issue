@@ -1,5 +1,6 @@
 package com.example.todolistziro.view.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,13 +8,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.todolistziro.view.adapters.NoteAdapter
+import com.example.todolistziro.view.adapters.IssueAdapter
 import com.example.todolistziro.viewmodel.NoteViewModel
 import com.example.todolistziro.R
-import com.example.todolistziro.architecture.App
+import com.example.todolistziro.architecture.extensions.getStringDataToLocal
+import com.example.todolistziro.architecture.network.Utils
 import com.example.todolistziro.architecture.viewBinding
 import com.example.todolistziro.architecture.viewModel
 import com.example.todolistziro.databinding.FragmentAllNotesBinding
+import com.example.todolistziro.view.activities.LoginActivity
 
 
 class AllNotes : BaseFragment() {
@@ -35,22 +38,32 @@ class AllNotes : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.recyclerView
         emptyLayout = binding.emptyLayout
-        recyclerView.layoutManager = LinearLayoutManager(activity)
-        recyclerView.setHasFixedSize(true)
+        val issueAdapter = IssueAdapter(requireActivity(), noteViewModel)
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(activity)
+            setHasFixedSize(true)
+            adapter = issueAdapter
+        }
 
-        val adapter = NoteAdapter(requireActivity(), noteViewModel)
-        recyclerView.adapter = adapter
+        noteViewModel.allIssue.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it.isEmpty()) {
+                    recyclerView.visibility = View.GONE
+                    emptyLayout.visibility = View.VISIBLE
+                } else {
+                    recyclerView.visibility = View.VISIBLE
+                    emptyLayout.visibility = View.GONE
+                    issueAdapter.setIssues(it)
+                }
+            }
+        }
 
-        noteViewModel.allNotes.observe(
-            viewLifecycleOwner
-        ) { notes -> // Update recycler view
-            if (notes.isEmpty()) {
-                recyclerView.visibility = View.GONE
-                emptyLayout.visibility = View.VISIBLE
-            } else {
-                recyclerView.visibility = View.VISIBLE
-                emptyLayout.visibility = View.GONE
-                adapter.setNotes(notes)
+        noteViewModel.hasError.observe(viewLifecycleOwner) {
+            it?.let {
+                if (it) {
+                    requireActivity().startActivity(Intent(requireContext(), LoginActivity::class.java))
+                    requireActivity().finish()
+                }
             }
         }
 
@@ -64,12 +77,13 @@ class AllNotes : BaseFragment() {
                 viewHolder1: RecyclerView.ViewHolder
             ): Boolean = false
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) =
-                noteViewModel.delete(adapter.getNoteAt(viewHolder.adapterPosition))
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
 
         }).attachToRecyclerView(recyclerView)
     }
 
-    private fun initViewModel() = NoteViewModel(App())
+    private fun initViewModel() = NoteViewModel(getStringDataToLocal(Utils.LocalDataKeys.TOKEN))
 
 }

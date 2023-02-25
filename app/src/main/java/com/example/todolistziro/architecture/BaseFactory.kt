@@ -1,7 +1,9 @@
 package com.example.todolistziro.architecture
 
+import android.app.Activity
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.createViewModelLazy
 import androidx.lifecycle.ViewModel
@@ -26,4 +28,7 @@ inline fun <reified VM: ViewModel> Fragment.activityViewModel(noinline creator: 
     createViewModelLazy(VM::class, storeProducer = { requireActivity().viewModelStore }, factoryProducer = { BaseFactory(creator) })
 
 inline fun <reified VM: ViewModel> ComponentActivity.viewModel(noinline creator: () -> VM) =
+    viewModels<VM> { BaseFactory(creator) }
+
+inline fun <reified VM: ViewModel> AppCompatActivity.viewModel(noinline creator: () -> VM) =
     viewModels<VM> { BaseFactory(creator) }

@@ -1,20 +1,38 @@
 package com.example.todolistziro.view.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.Animation.AnimationListener
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import androidx.lifecycle.Observer
 import com.example.todolistziro.R
-import com.example.todolistziro.fullscreen
+import com.example.todolistziro.architecture.network.Utils
+import com.example.todolistziro.architecture.repositories.LoginRepositoryImpl
+import com.example.todolistziro.architecture.viewModel
+import com.example.todolistziro.databinding.ActivitySplashLoginBinding
+import com.example.todolistziro.architecture.extensions.fullscreen
+import com.example.todolistziro.architecture.extensions.getStringDataToLocal
+import com.example.todolistziro.architecture.extensions.saveStringDataToLocal
+import com.example.todolistziro.viewmodel.LoginViewModel
 
-class LoginActivity: AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySplashLoginBinding
+    private val loginViewModel by viewModel(::initViewModel)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash_login)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_login)
+        binding.lifecycleOwner = this
+        if (getStringDataToLocal(Utils.LocalDataKeys.TOKEN).isNotEmpty()) {
+            navigateToMainActivity(getStringDataToLocal(Utils.LocalDataKeys.TOKEN))
+        }
         val logo = findViewById<View>(R.id.logo)
         val form = findViewById<View>(R.id.form)
         form.visibility = View.INVISIBLE
@@ -40,6 +58,39 @@ class LoginActivity: AppCompatActivity() {
             override fun onAnimationRepeat(animation: Animation) {}
         })
 
+        val loginButton = findViewById<Button>(R.id.btn_login)
+        loginButton.setOnClickListener {
+            loginViewModel.login(
+                binding.edtMail.text.toString(),
+                binding.edtPassword.text.toString()
+            )
+        }
+
+        loginViewModel.loginResponse.observe(this) {
+            it?.let {
+                if(it.jwt.isNotEmpty()) {
+                    val sharedPref = getPreferences(MODE_PRIVATE)
+                    with (sharedPref.edit()) {
+                        putString(Utils.LocalDataKeys.TOKEN, it.jwt)
+                        commit()
+                    }
+                    navigateToMainActivity(it.jwt)
+                }
+            }
+        }
+
         fullscreen()
     }
+
+    private fun navigateToMainActivity(token: String) {
+        val intent = Intent(this, MainActivity::class.java)
+        val bundle = Bundle()
+        bundle.putString(Utils.LocalDataKeys.TOKEN, token)
+        intent.putExtras(bundle)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun initViewModel() = LoginViewModel(LoginRepositoryImpl())
+
 }

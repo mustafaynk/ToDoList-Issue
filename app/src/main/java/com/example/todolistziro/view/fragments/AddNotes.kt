@@ -9,10 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import com.example.todolistziro.R
-import com.example.todolistziro.architecture.App
+import com.example.todolistziro.architecture.extensions.getStringDataToLocal
+import com.example.todolistziro.architecture.network.Utils
 import com.example.todolistziro.architecture.viewBinding
 import com.example.todolistziro.architecture.viewModel
-import com.example.todolistziro.data.Note
 import com.example.todolistziro.databinding.FragmentAddNotesBinding
 import com.example.todolistziro.utils.Constants
 import com.example.todolistziro.viewmodel.NoteViewModel
@@ -58,12 +58,10 @@ class AddNotes : BaseFragment() {
         data.putExtra(Constants.EXTRA_DESCRIPTION, description)
         data.putExtra(Constants.EXTRA_PRIORITY, priority)
 
-        val note = Note(title, description, priority)
-        noteViewModel.insert(note)
 
         findNavController().navigate(R.id.destination_home)
     }
 
-    private fun initViewModel() = NoteViewModel(App())
+    private fun initViewModel() = NoteViewModel(getStringDataToLocal(Utils.LocalDataKeys.TOKEN))
 
 }

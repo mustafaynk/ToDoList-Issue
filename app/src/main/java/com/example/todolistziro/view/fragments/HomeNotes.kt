@@ -2,12 +2,14 @@ package com.example.todolistziro.view.fragments
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import com.example.todolistziro.R
-import com.example.todolistziro.architecture.App
+import com.example.todolistziro.architecture.extensions.getStringDataToLocal
+import com.example.todolistziro.architecture.network.Utils
 import com.example.todolistziro.architecture.viewBinding
 import com.example.todolistziro.architecture.viewModel
 import com.example.todolistziro.databinding.FragmentHomeNotesBinding
@@ -36,22 +38,11 @@ class HomeNotes : BaseFragment() {
     }
 
     private fun getData() {
-        noteViewModel.allNotes.observe(viewLifecycleOwner
-        ) { notes ->
-            var personalCounter = 0
-            var workCounter = 0
-            var healthCounter = 0
-
-            for (i in notes) {
-                when (i.priority) {
-                    0 -> workCounter++
-                    1 -> personalCounter++
-                    2 -> healthCounter++
-                }
+        noteViewModel.getAllIssue()
+        noteViewModel.allIssue.observe(viewLifecycleOwner) {
+            it?.let {
+                Log.e("MY_TEST", it.toString())
             }
-            binding.personalValueTextview.text = personalCounter.toString()
-            binding.workValueTextview.text = workCounter.toString()
-            binding.healthValueTextview.text = healthCounter.toString()
         }
     }
 
@@ -67,6 +58,6 @@ class HomeNotes : BaseFragment() {
         animation.start()
     }
 
-    private fun initViewModel() = NoteViewModel(App())
+    private fun initViewModel() = NoteViewModel(getStringDataToLocal(Utils.LocalDataKeys.TOKEN))
 
 }

@@ -6,6 +6,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.todolistziro.architecture.App
 import kotlinx.coroutines.*
 
 @Database(entities = [Note::class], version = 1)
@@ -20,7 +21,7 @@ abstract class NoteDatabase : RoomDatabase() {
         fun getInstance(context: Context): NoteDatabase {
             if (instance == null) {
                 instance = Room.databaseBuilder(
-                    context.applicationContext,
+                    App.appContext,
                     NoteDatabase::class.java, "note_database"
                 )
                     .fallbackToDestructiveMigration()

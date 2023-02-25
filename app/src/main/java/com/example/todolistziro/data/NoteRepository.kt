@@ -1,35 +1,34 @@
 package com.example.todolistziro.data
 
-import android.app.Application
-import android.os.AsyncTask
-import androidx.lifecycle.LiveData
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.example.todolistziro.architecture.App
+import com.example.todolistziro.architecture.apis.IssueApi
+import com.example.todolistziro.data.issue.Issue
+import retrofit2.HttpException
+import javax.inject.Inject
 
-class NoteRepository(application: Application, private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO) {
-    private val noteDao: NoteDao
-    val allNotes: LiveData<List<Note>>
+class NoteRepository(private val token: String) {
+
+    val allIssue: MutableLiveData<List<Issue>> = MutableLiveData()
+    val hasError: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    @Inject
+    lateinit var issueApi: IssueApi
 
     init {
-        val noteDatabase = NoteDatabase.getInstance(application)
-        noteDao = noteDatabase.noteDao()
-        allNotes = noteDao.allNotes
+        App.instance.apiComponent.inject(this)
     }
 
-    suspend fun insert(note: Note) = withContext(ioDispatcher) {
-        noteDao.insert(note)
+    suspend fun getAllNotes() {
+        try {
+            val response = issueApi.getAllIssue("Bearer $token")
+            allIssue.postValue(response)
+        } catch (e:HttpException) {
+            Log.e("Issue Api", "${e.message()} Invalid Token: $token")
+            hasError.postValue(true)
+        }
+
     }
 
-    suspend fun update(note: Note) = withContext<Unit>(ioDispatcher) {
-        noteDao.update(note)
-    }
-
-    suspend fun delete(noteId: Int) = withContext<Unit>(ioDispatcher) {
-        noteDao.delete(noteId)
-    }
-
-    suspend fun deleteAllNotes() = withContext(ioDispatcher) {
-        noteDao.deleteAllNotes()
-    }
 }
