@@ -34,16 +34,6 @@ class HomeNotes : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         animation()
-        getData()
-    }
-
-    private fun getData() {
-        noteViewModel.getAllIssue()
-        noteViewModel.allIssue.observe(viewLifecycleOwner) {
-            it?.let {
-                Log.e("MY_TEST", it.toString())
-            }
-        }
     }
 
     private fun animation() {
@@ -53,7 +43,7 @@ class HomeNotes : BaseFragment() {
             0,
             70
         ) // see this max value coming back here, we animate towards that value
-        animation.duration = 3000 // in milliseconds
+        animation.duration = 3500 // in milliseconds
         animation.interpolator = DecelerateInterpolator()
         animation.start()
     }

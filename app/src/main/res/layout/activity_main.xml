@@ -27,6 +27,7 @@
         android:id="@+id/bottom_nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         app:itemIconTint="@drawable/bottomnavigationview"
         app:itemTextColor="@drawable/bottomnavigationview"
         app:menu="@menu/menu_navigation" />

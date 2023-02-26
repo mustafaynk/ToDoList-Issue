@@ -9,10 +9,10 @@
     <color name="purple">#8B5BD9</color>
     <color name="blue">#1377EB</color>
 
-    <color name="turquoise_green">#A4DEAD</color>
-    <color name="light_beige">#FFFFBF</color>
-    <color name="sunset">#FFD4B8</color>
-    <color name="warm_blue">#df5555e0</color>
+    <color name="turquoise_green">#00FF00</color>
+    <color name="light_beige">#FFFF00</color>
+    <color name="sunset">#EF6C00</color>
+    <color name="warm_blue">#FF0000</color>
 
 
 

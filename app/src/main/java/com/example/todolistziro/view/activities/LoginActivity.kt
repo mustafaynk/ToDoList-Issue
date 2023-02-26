@@ -51,7 +51,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onAnimationEnd(animation: Animation) {
                 form.visibility = View.VISIBLE
                 form.startAnimation(alphaAnimation2)
-                logo.animate().translationY(-(form.height / 2.0f))
+                logo.animate().translationY(-(form.height / 1.5f))
                     .setInterpolator(LinearOutSlowInInterpolator()).duration = 1000
             }
 

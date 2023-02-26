@@ -25,7 +25,6 @@ class IssueAdapter(private val context: Context, private var noteViewModel: Note
     override fun onBindViewHolder(noteHolder: NoteHolder, position: Int) {
         val currentNote = issues[position]
         noteHolder.textViewTitle.text = currentNote.name
-        noteHolder.textViewTitle.setTextColor(context.resources.getColor(getColor(currentNote.issuePriority.priority)))
         noteHolder.textViewDescription.text = currentNote.description
         noteHolder.type.setBackgroundResource(getColor(currentNote.issuePriority.priority))
         noteHolder.priority.text = getType(currentNote.issuePriority.priority)

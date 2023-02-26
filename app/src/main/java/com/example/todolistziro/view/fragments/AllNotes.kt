@@ -67,6 +67,8 @@ class AllNotes : BaseFragment() {
             }
         }
 
+        noteViewModel.getAllIssue()
+
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0,
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
